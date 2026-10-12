@@ -64,3 +64,18 @@ All tests use JUnit 5 assertions.
 GitHub Actions runs JUnit tests on every push to ensure code compiles and tests pass.
 
 ## Repository Structure
+## References
+
+Farrell, J. 2023. Java Programming. 10th ed. Boston: Cengage Learning.
+
+IIE. 2025. PROG5121 Programming 1A - POE Part 2 Specification. Johannesburg: The Independent Institute of Education.
+
+JSON.org. 2024. Introduction to JSON. [Online]. Available at: https://www.json.org/json-en.html [Accessed: 12 May 2026].
+
+JUnit. 2024. JUnit 5 User Guide. [Online]. Available at: https://junit.org/junit5/docs/current/user-guide/ [Accessed: 12 May 2026].
+
+Oracle. 2024. Class JOptionPane - Java SE 21 Documentation. [Online]. Available at: https://docs.oracle.com/en/java/javase/21/docs/api/java.desktop/javax/swing/JOptionPane.html [Accessed: 12 May 2026].
+
+Oracle. 2024. Lesson: Using JSON in Java. [Online]. Available at: https://docs.oracle.com/en-us/iaas/developer-tutorials/tutorials/json-in-java/ [Accessed: 12 May 2026]
+- IIE PROG5121 POE Part 2 Specification 2025
+- Oracle Java Documentation
