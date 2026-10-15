@@ -1,85 +1,71 @@
-package javapoe.gomolemo.ramokgola;
+package quickchat; 
 
 import javax.swing.JOptionPane;
 
 public class QuickChatApp {
     public static void main(String[] args) {
+
+        // Part 1 - Registration and Login
         Registration reg = new Registration();
-        Login loginObj = new Login();
+        Login login = new Login();
 
-        // --- PART 1: Registration (uses your existing Registration.java) ---
-        JOptionPane.showMessageDialog(null, "Welcome to QuickChat - Please Register");
-
-        String username = JOptionPane.showInputDialog("Enter Username (must contain _ and <=5 chars):");
-        String password = JOptionPane.showInputDialog("Enter Password (8 chars, capital, number, special):");
-        String cell = JOptionPane.showInputDialog("Enter Cellphone (+27...):");
+        String username = JOptionPane.showInputDialog("Enter username (must have _ and max 5 chars):");
+        String password = JOptionPane.showInputDialog("Enter password (8 chars, Capital, number, special):");
+        String cell = JOptionPane.showInputDialog("Enter cell with +27:");
 
         String regResult = reg.registerUser(username, password, cell);
         JOptionPane.showMessageDialog(null, regResult);
 
         // If registration failed, stop
-        if (!regResult.toLowerCase().contains("successfully")) {
-            JOptionPane.showMessageDialog(null, "Registration failed. Please restart the app.");
+        if (!regResult.contains("successfully")) {
             return;
         }
 
-        // --- PART 1: Login ---
-        String loginUsername = JOptionPane.showInputDialog("LOGIN - Enter Username:");
-        String loginPassword = JOptionPane.showInputDialog("LOGIN - Enter Password:");
+        String loginUsername = JOptionPane.showInputDialog("LOGIN - Enter username:");
+        String loginPassword = JOptionPane.showInputDialog("LOGIN - Enter password:");
 
-        boolean loggedIn = loginObj.loginUser(loginUsername, loginPassword);
-        JOptionPane.showMessageDialog(null, loginObj.returnLoginStatus(loggedIn));
+        boolean logged = login.loginUser(loginUsername, loginPassword);
+        String status = login.returnLoginStatus(logged);
+        JOptionPane.showMessageDialog(null, status);
 
-        if (!loggedIn) {
-            return; // Stop if login fails
+        if (!logged) {
+            return;
         }
 
-        JOptionPane.showMessageDialog(null, "Welcome to QuickChat.");
+        // Part 2 - QuickChat
+        JOptionPane.showMessageDialog(null, "Welcome to QuickChat!");
 
-        // --- PART 2: QuickChat Menu Loop ---
-        while (true) {
-            String menu = JOptionPane.showInputDialog(null,
-                "QuickChat Menu:\n1) Send Messages\n2) Show recently sent messages\n3) Quit",
-                "QuickChat",
-                JOptionPane.QUESTION_MESSAGE);
+        int totalToSend = Integer.parseInt(JOptionPane.showInputDialog("How many messages you want to send?"));
 
-            if (menu == null || menu.equals("3")) {
-                JOptionPane.showMessageDialog(null, "Total messages sent: " + Message.returnTotalMessagess() + "\nGoodbye!");
-                System.exit(0);
+        for (int i = 1; i <= totalToSend; i++) {
+            Message msgObj = new Message("", "", "", "");
+
+            String id = msgObj.checkMessageID();
+            String recipient = JOptionPane.showInputDialog("Message " + i + " - Enter recipient (+27... max 13):");
+
+            if (!msgObj.checkRecipientCell(recipient)) {
+                JOptionPane.showMessageDialog(null, "Cell phone number is incorrectly formatted or does not contain international code.");
+                i--; // try again
+                continue;
             }
 
-            if (menu.equals("1")) {
-                String numStr = JOptionPane.showInputDialog("How many messages do you want to send?");
-                int num = Integer.parseInt(numStr);
-
-                for (int i = 0; i < num; i++) {
-                    String recipient = JOptionPane.showInputDialog("Enter recipient number (with international code e.g. +27830000000):");
-                    String text = JOptionPane.showInputDialog("Enter your message (max 250 chars):");
-
-                    Message msg = new Message(recipient, text);
-                    String result = msg.SentMessage();
-                    JOptionPane.showMessageDialog(null, result);
-
-                    if (result.equals("Message successfully sent.")) {
-                        JOptionPane.showMessageDialog(null,
-                            "--- MESSAGE DETAILS ---\n" +
-                            "MessageID: " + msg.getMessageID() + "\n" +
-                            "MessageHash: " + msg.getMessageHash() + "\n" +
-                            "Recipient: " + msg.getRecipient() + "\n" +
-                            "Message: " + msg.getMessageText()
-                        );
-                    }
-                }
-            } else if (menu.equals("2")) {
-                String allMessages = Message.printMessages();
-                if (allMessages.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "No messages sent yet - Coming Soon feature shows empty.");
-                } else {
-                    JOptionPane.showMessageDialog(null, "--- SENT MESSAGES ---\n\n" + allMessages);
-                }
-            } else {
-                JOptionPane.showMessageDialog(null, "Invalid option. Please choose 1, 2 or 3.");
+            String text = JOptionPane.showInputDialog("Enter message (max 250 chars):");
+            if (text.length() > 250) {
+                JOptionPane.showMessageDialog(null, "Message exceeds 250 characters by " + (text.length() - 250) + ", please reduce size.");
+                i--;
+                continue;
             }
+
+            String hash = msgObj.createMessageHash(id, i, text);
+            Message finalMsg = new Message(id, recipient, text, hash);
+
+            String choiceStr = JOptionPane.showInputDialog("Choose:\n1) Send Message\n2) Disregard\n3) Store Message");
+            int choice = Integer.parseInt(choiceStr);
+
+            String result = finalMsg.sentMessage(choice);
+            JOptionPane.showMessageDialog(null, result + "\nID: " + id + "\nHash: " + hash);
         }
+
+        JOptionPane.showMessageDialog(null, "Total messages sent: " + Message.returnTotalMessages() + "\n" + Message.printMessages());
     }
 }

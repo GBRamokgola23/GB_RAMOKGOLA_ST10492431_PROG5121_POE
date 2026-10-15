@@ -1,12 +1,4 @@
-//
-  PROG5121 - POE Part 1
- Student: GB Ramokgola - ST10492431
- 
-  DEVELOPMENT NOTE: This project was fully coded and tested in NetBeans IDE.
-  This GitHub repository (GB_RAMOKGOLA_ST10492431_PROG5121_POE) is a copy
-  created solely to fulfill the POE requirement for GitHub submission.
- Original NetBeans project functionality remains unchanged.
- //
+
 package javapoe.gomolemo.ramokgola.st10492431;
 
 public class Login {
