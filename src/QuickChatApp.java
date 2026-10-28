@@ -1,71 +1,88 @@
-package quickchat; 
+
+package javapoe.gomolemo.ramokgola.st10492431;
 
 import javax.swing.JOptionPane;
+import java.util.ArrayList;
 
 public class QuickChatApp {
     public static void main(String[] args) {
-
-        // Part 1 - Registration and Login
-        Registration reg = new Registration();
+        // test data for Part 3
+        Message.loadTestData();
+        Message.saveToJSON(); // messages.json
+        
         Login login = new Login();
-
-        String username = JOptionPane.showInputDialog("Enter username (must have _ and max 5 chars):");
-        String password = JOptionPane.showInputDialog("Enter password (8 chars, Capital, number, special):");
-        String cell = JOptionPane.showInputDialog("Enter cell with +27:");
-
-        String regResult = reg.registerUser(username, password, cell);
-        JOptionPane.showMessageDialog(null, regResult);
-
-        // If registration failed, stop
-        if (!regResult.contains("successfully")) {
-            return;
-        }
-
-        String loginUsername = JOptionPane.showInputDialog("LOGIN - Enter username:");
-        String loginPassword = JOptionPane.showInputDialog("LOGIN - Enter password:");
-
-        boolean logged = login.loginUser(loginUsername, loginPassword);
-        String status = login.returnLoginStatus(logged);
-        JOptionPane.showMessageDialog(null, status);
-
-        if (!logged) {
-            return;
-        }
-
-        // Part 2 - QuickChat
-        JOptionPane.showMessageDialog(null, "Welcome to QuickChat!");
-
-        int totalToSend = Integer.parseInt(JOptionPane.showInputDialog("How many messages you want to send?"));
-
-        for (int i = 1; i <= totalToSend; i++) {
-            Message msgObj = new Message("", "", "", "");
-
-            String id = msgObj.checkMessageID();
-            String recipient = JOptionPane.showInputDialog("Message " + i + " - Enter recipient (+27... max 13):");
-
-            if (!msgObj.checkRecipientCell(recipient)) {
-                JOptionPane.showMessageDialog(null, "Cell phone number is incorrectly formatted or does not contain international code.");
-                i--; // try again
-                continue;
+        Registration reg = new Registration();
+        
+        // Part 1
+        String username = JOptionPane.showInputDialog("Enter username to login:");
+        String password = JOptionPane.showInputDialog("Enter password:");
+        
+        String option;
+        do {
+            option = JOptionPane.showInputDialog(null,
+                    "QuickChat Part 3 - Choose option:\n" +
+                    "1) Display all senders and recipients\n" +
+                    "2) Display longest sent message\n" +
+                    "3) Search for message ID\n" +
+                    "4) Search messages by recipient\n" +
+                    "5) Delete message by hash\n" +
+                    "6) Display full report\n" +
+                    "7) Quit\n" +
+                    "Enter number:");
+            
+            if(option == null) break;
+            
+            switch(option) {
+                case "1":
+                    StringBuilder sr = new StringBuilder("Sent Messages:\n");
+                    for(Message m : Message.sentMessages) {
+                        sr.append("Sender: ").append(m.getSender()).append(" -> Recipient: ").append(m.getRecipient()).append("\n");
+                    }
+                    JOptionPane.showMessageDialog(null, sr.toString());
+                    break;
+                    
+                case "2":
+                    String longest = Message.getLongestMessage();
+                    JOptionPane.showMessageDialog(null, "Longest message: \n" + longest);
+                    break;
+                    
+                case "3":
+                    String id = JOptionPane.showInputDialog("Enter Message ID to search (e.g. ID002):");
+                    Message found = Message.searchByMessageID(id);
+                    if(found != null) {
+                        JOptionPane.showMessageDialog(null, "Found:\nRecipient: "+found.getRecipient()+"\nMessage: "+found.getMessageText());
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Message ID not found");
+                    }
+                    break;
+                    
+                case "4":
+                    String rec = JOptionPane.showInputDialog("Enter recipient number to search:");
+                    ArrayList<Message> list = Message.searchByRecipient(rec);
+                    if(list.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "No messages for recipient");
+                    } else {
+                        StringBuilder b = new StringBuilder();
+                        for(Message m : list) b.append(m.getMessageText()).append("\n---\n");
+                        JOptionPane.showMessageDialog(null, "Messages for "+rec+":\n"+b.toString());
+                    }
+                    break;
+                    
+                case "5":
+                    String hash = JOptionPane.showInputDialog("Enter hash to delete (e.g. ID002:1:WhereTime.):");
+                    String result = Message.deleteByHash(hash);
+                    Message.saveToJSON();
+                    JOptionPane.showMessageDialog(null, result);
+                    break;
+                    
+                case "6":
+                    JOptionPane.showMessageDialog(null, Message.displayReport());
+                    break;
+                    
+                case "7":
+                    JOptionPane.showMessageDialog(null, "Total messages: " + Message.sentMessages.size() + "\nQuitting - messages.json saved!");
+                    break;
             }
-
-            String text = JOptionPane.showInputDialog("Enter message (max 250 chars):");
-            if (text.length() > 250) {
-                JOptionPane.showMessageDialog(null, "Message exceeds 250 characters by " + (text.length() - 250) + ", please reduce size.");
-                i--;
-                continue;
-            }
-
-            String hash = msgObj.createMessageHash(id, i, text);
-            Message finalMsg = new Message(id, recipient, text, hash);
-
-            String choiceStr = JOptionPane.showInputDialog("Choose:\n1) Send Message\n2) Disregard\n3) Store Message");
-            int choice = Integer.parseInt(choiceStr);
-
-            String result = finalMsg.sentMessage(choice);
-            JOptionPane.showMessageDialog(null, result + "\nID: " + id + "\nHash: " + hash);
-        }
-
-        JOptionPane.showMessageDialog(null, "Total messages sent: " + Message.returnTotalMessages() + "\n" + Message.printMessages());
+        } while(!option.equals("7"));
     }
 }
